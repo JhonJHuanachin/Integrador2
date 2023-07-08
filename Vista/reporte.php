@@ -1,16 +1,16 @@
 <?php
-require('../LIBRERIA/fpdf.php');
+require('../PDF/fpdf.php');
 
 class PDF extends FPDF
 {
     function Header()
-    {     
-      
+    {
+
         $this->SetFont('Arial', 'B', 18);
         $this->Cell(0, 10, 'EMPRESA TEC S.A.C', 1, 1, 'C', false);
-        
-        $this->SetFont('Arial', '', 10);
-        $this->Cell(0, 6, 'Av.Central', 0, 1, 'C');
+
+        $this->SetFont('Arial', '', 8);
+        $this->Cell(0, 6, 'Av. Central ',  0, 1,  'C');
         $this->Cell(0, 6, 'Administrador', 0, 1, 'C');
         $this->Cell(0, 6, 'usuario_ejemplo@gmail.com', 0, 1, 'C');
 
@@ -23,11 +23,11 @@ class PDF extends FPDF
 
         $this->SetFont('Arial', 'B', 10);
         $this->SetFillColor(255, 204, 153);
-        $this->Cell(30, 10, 'N', 1, 0, 'C', true);
-        $this->Cell(40, 10, 'CATEGORIA', 1, 0, 'C', true);
-        $this->Cell(40, 10, 'PRIORIDAD', 1, 0, 'C', true);
-        $this->Cell(30, 10, 'ESTADO', 1, 0, 'C', true);
-        $this->Cell(30, 10, 'USUARIO', 1, 1, 'C', true);
+        $this->Cell(10, 10, 'N', 1, 0, 'C', true);
+        $this->Cell(55, 10, 'CATEGORIA', 1, 0, 'C', true);
+        $this->Cell(25, 10, 'PRIORIDAD', 1, 0, 'C', true);
+        $this->Cell(25, 10, 'ESTADO', 1, 0, 'C', true);
+        $this->Cell(50, 10, 'USUARIO', 1, 1, 'C', true);
     }
 
     function Footer()
@@ -38,11 +38,11 @@ class PDF extends FPDF
 
         $this->SetY(-15);
         $this->SetFont('Arial', 'I', 8);
-        
-        $timezone = new DateTimeZone('America/Lima'); 
+
+        $timezone = new DateTimeZone('America/Lima');
         $date = new DateTime('now', $timezone);
         $currentDateTime = $date->format('d/m/Y H:i:s');
-        $this->Cell(0, 10, ''. $currentDateTime, 0, 0, 'R');
+        $this->Cell(0, 10, '' . $currentDateTime, 0, 0, 'R');
     }
 }
 
@@ -58,11 +58,11 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 10);
 
 while ($row = mysqli_fetch_assoc($resultado)) {
-    $pdf->Cell(30, 10, $row['id_incidente'], 1, 0, 'C');
-    $pdf->Cell(40, 10, $row['categoria'], 1, 0, 'C');
-    $pdf->Cell(40, 10, $row['prioridad'], 1, 0, 'C');
-    $pdf->Cell(30, 10, $row['estado'], 1, 0, 'C');
-    $pdf->Cell(30, 10, $row['id_usuario'], 1, 1, 'C');
+    $pdf->Cell(10, 10, $row['id_incidente'], 1, 0, 'C');
+    $pdf->Cell(55, 10, $row['categoria'], 1, 0, '');
+    $pdf->Cell(25, 10, $row['prioridad'], 1, 0, 'C');
+    $pdf->Cell(25, 10, $row['estado'], 1, 0, '');
+    $pdf->Cell(50, 10, $row['c_usuario'], 1, 1, '');
 }
 
 $pdf->Output();

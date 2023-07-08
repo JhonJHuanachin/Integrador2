@@ -2,7 +2,6 @@
 session_start();
 require '../MODELO/conexion.php';
 
-
 class ControladorIncidente
 {
     private $conexion;
@@ -12,11 +11,11 @@ class ControladorIncidente
         $this->conexion = $conexion;
     }
 
-    public function editarIncidente($id, $categoria, $prioridad, $estado, $descripcion, $id_usuario)
+    public function editarIncidente($id, $categoria, $prioridad, $estado, $descripcion, $c_usuario)
     {
-        $query = "UPDATE u_incidentes SET categoria = ?, prioridad = ?, estado = ?, descripcion = ?, id_usuario = ? WHERE id_incidente = ?";
+        $query = "UPDATE u_incidentes SET categoria = ?, prioridad = ?, estado = ?, descripcion = ?, c_usuario = ? WHERE id_incidente = ?";
         $stmt = $this->conexion->prepare($query);
-        $stmt->bind_param("ssssii", $categoria, $prioridad, $estado, $descripcion, $id_usuario, $id);
+        $stmt->bind_param("sssssi", $categoria, $prioridad, $estado, $descripcion, $c_usuario, $id);
         $stmt->execute();
     }
 
@@ -29,8 +28,43 @@ class ControladorIncidente
 
         return $stmt->affected_rows;
     }
+
+    public function agregarIncidente($categoria, $prioridad, $estado, $descripcion, $c_usuario, $imagen)
+    {
+        if (!empty($_FILES['imagen']['tmp_name'])) {
+            $contenido = addslashes(file_get_contents($_FILES['imagen']['tmp_name']));
+        } else {
+            $contenido = null;
+        }
+
+        $query = "INSERT INTO u_incidentes (categoria, prioridad, estado, descripcion, c_usuario, imagen) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conexion->prepare($query);
+        $stmt->bind_param("ssssss", $categoria, $prioridad, $estado, $descripcion, $c_usuario, $contenido);
+        $stmt->execute();
+    }
+    public function filtrarIncidentes($categoria, $prioridad, $estado)
+    {
+        $query = "SELECT * FROM u_incidentes WHERE 1 = 1";
+
+        if (!empty($categoria)) {
+            $query .= " AND categoria = '$categoria'";
+        }
+
+        if (!empty($prioridad)) {
+            $query .= " AND prioridad = '$prioridad'";
+        }
+
+        if (!empty($estado)) {
+            $query .= " AND estado = '$estado'";
+        }
+
+        $resultado = mysqli_query($this->conexion, $query);
+
+        return $resultado;
+    }
 }
 
+//EDITAR UN INCIDENTE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($_GET['action'] === 'editar') {
         $id = $_POST['id_incidente'];
@@ -38,16 +72,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $prioridad = $_POST['prioridad'];
         $estado = $_POST['estado'];
         $descripcion = $_POST['descripcion'];
-        $id_usuario = $_POST['id_usuario'];
+        $c_usuario = $_POST['c_usuario'];
 
         $controlador = new ControladorIncidente($conexion);
-        $controlador->editarIncidente($id, $categoria, $prioridad, $estado, $descripcion, $id_usuario);
+        $controlador->editarIncidente($id, $categoria, $prioridad, $estado, $descripcion, $c_usuario);
 
-        header("Location: ../VISTA/incidencias.php");
+        header("Location: ../VISTA/incidencias_admin.php");
         exit();
     }
 }
 
+//ELIMINAR UN INCIDENTE
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($_GET['action'] === 'eliminar' && isset($_GET['id'])) {
         $id = $_GET['id'];
@@ -57,42 +92,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
         if ($filasEliminadas > 0) {
             echo '<p>Incidente eliminado correctamente.</p>';
-            header("Location: ../VISTA/incidencias.php");
+            header("Location: ../VISTA/incidencias_admin.php");
         } else {
             echo '<p>No se encontró el incidente o no se pudo eliminar.</p>';
         }
     }
 }
+
+//AGREGAR UN INCIDENTE
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $categoria = $_POST['categoria'];
-    $prioridad = $_POST['prioridad'];
-    $estado = $_POST['estado'];
-    $descripcion = $_POST['descripcion'];
-    $id_usuario = $_POST['id_usuario'];
+    if ($_GET['action'] === 'agregar') {
+        $categoria = $_POST['categoria'];
+        $prioridad = $_POST['prioridad'];
+        $estado = $_POST['estado'];
+        $descripcion = $_POST['descripcion'];
+        $c_usuario = $_POST['c_usuario'];
+        $imagen = $_FILES['imagen'];
 
-    if (empty($categoria) || empty($prioridad) || empty($estado) || empty($descripcion) || empty($id_usuario)) {
-        echo '<script>alert("TODOS LOS CAMPOS SON OBLIGATORIOS"); window.location="../VISTA/agregar_incidencias.php";</script>';
-        exit;
-    }
+        $controlador = new ControladorIncidente($conexion);
+        $controlador->agregarIncidente($categoria, $prioridad, $estado, $descripcion, $c_usuario, $imagen);
 
-    $consulta = "SELECT id_usuario FROM usuario WHERE id_usuario = '$id_usuario'";
-    $resultadoConsulta = mysqli_query($conexion, $consulta);
-    $existeUsuario = mysqli_num_rows($resultadoConsulta);
-
-    if ($existeUsuario == 0) {
-        echo '<script>alert("EL USUARIO NO EXISTE O NO SE HA ENCONTRADO EN LA BASE DE DATOS"); window.location="../VISTA/agregar_incidencias.php";</script>';
-        exit;
-    }
-
-    $sql = "INSERT INTO u_incidentes (categoria, prioridad, estado, descripcion, id_usuario) VALUES ('$categoria', '$prioridad', '$estado', '$descripcion', '$id_usuario')";
-    $resultado = mysqli_query($conexion, $sql);
-
-    if ($resultado) {
-        echo '<script>alert("USUARIO AGREGADO CON EXITO"); window.location="../VISTA/incidencias.php";</script>';
-        exit;
-    } else {
-        echo 'ERROR AL AGREGAR USUARIO: ' . mysqli_error($conexion);
+        header("Location: ../VISTA/incidencias_admin.php");
+        exit();
     }
 }
+//FILTRAR INCIDENTES
+$controlador = new ControladorIncidente($conexion);
+$filtroCategoria = $_GET['categoria'];
+$filtroPrioridad = $_GET['prioridad'];
+$filtroEstado = $_GET['estado'];
 
+$resultado = $controlador->filtrarIncidentes($filtroCategoria, $filtroPrioridad, $filtroEstado);
+
+while ($row = mysqli_fetch_assoc($resultado)) {
+    echo "<tr>";
+    echo "<td>" . $row['id_incidente'] . "</td>";
+    echo "<td>" . $row['categoria'] . "</td>";
+    echo "<td>" . $row['prioridad'] . "</td>";
+    echo "<td>" . $row['estado'] . "</td>";
+    echo "<td>" . $row['descripcion'] . "</td>";
+    echo "<td>" . $row['c_usuario'] . "</td>";
+    echo "</tr>";
+}
+
+mysqli_close($conexion);
 ?>

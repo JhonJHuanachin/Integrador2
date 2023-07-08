@@ -1,5 +1,5 @@
 <?php
-require_once '../MODELO/conexion.php';
+require '../MODELO/conexion.php';
 
 class ControladorUsuario
 {

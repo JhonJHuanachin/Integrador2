@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado = mysqli_query($conexion, $sql);
 
     if ($resultado) {
-        header("Location: ../VISTA/login.html");
+        header("Location: ../VISTA/login_alumnos.html");
         exit;
     } else {
         echo 'Error al registrar el usuario: ' . mysqli_error($conexion);
