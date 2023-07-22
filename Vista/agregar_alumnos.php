@@ -45,6 +45,11 @@
                     <i class="fas fa-fw fa-user-plus"></i>
                     <span>Usuario</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="asignar_incidencias.php">
+                <i class="fas fa-handshake"></i>
+                    <span>Asignar Incidente</span></a>
+            </li
             <hr class="sidebar-divider d-none d-md-block" />
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>

@@ -1,5 +1,7 @@
 <?php
+
 session_start();
+
 require '../MODELO/conexion.php';
 
 class ControladorIncidente

@@ -45,6 +45,11 @@
           <i class="fas fa-fw fa-user-plus"></i>
           <span>Usuario</span></a>
       </li>
+      <li class="nav-item">
+                <a class="nav-link" href="asignar_incidencias.php">
+                <i class="fas fa-handshake"></i>
+                    <span>Asignar Incidente</span></a>
+            </li
       <hr class="sidebar-divider d-none d-md-block" />
       <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -106,55 +111,45 @@
         </nav>
         <div class="container-fluid">
           <div class="container-fluid">
+
             <div class="card shadow mb-4">
               <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Filtros</h6>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
-                  <form action="../CONTROLADOR/controlador_incidente.php?action=filtrar" method="GET">
-                    <table class="table table-bordered" id="filtroTable" width="100%" cellspacing="0">
-                      <thead>
-                        <tr>
-                          <th>Categoría</th>
-                          <th>Prioridad</th>
-                          <th>Estado</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <select class="form-control" name="categoria">
-                              <option value="">Todos</option>
-                              <option value="Hardware">Hardware</option>
-                              <option value="Software académico">Software académico</option>
-                              <option value="Redes y conectividad">Redes y conectividad</option>
-                              <option value="Cuentas y acceso">Cuentas y acceso</option>
-                              <option value="Plataformas y sistemas académico">Plataformas y sistemas académico</option>
-                              <option value="Otros">Otros</option>
-                            </select>
-                          </td>
-                          <td>
-                            <select class="form-control" name="prioridad">
-                              <option value="">Todos</option>
-                              <option value="Baja">Baja</option>
-                              <option value="Media">Media</option>
-                              <option value="Alta">Alta</option>
-                            </select>
-                          </td>
-                          <td>
-                            <select class="form-control" name="estado">
-                              <option value="">Todos</option>
-                              <option value="En proceso">En proceso</option>
-                              <option value="Solucionado">Solucionado</option>
-                              <option value="Cerrado">Cerrado</option>
-                            </select>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                  </form>
+                  <div class="form-row mb-3">
+                    <div class="col">
+                      <input type="text" id="busqueda" class="form-control" placeholder="Buscar por descripción...">
+                    </div>
+                    <div class="col">
+                      <select id="filtroCategoria" class="form-control">
+                        <option value="">Todas las categorías</option>
+                        <option value="Plataformas y sistemas académico">Plataformas y sistemas académico</option>
+                        <option value="Software académico">Software académico</option>
+                        <option value="Redes y conectividad">Redes y conectividad</option>
+                        <option value="Cuentas y acceso">Cuentas y acceso</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Otros">Otros</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <select id="filtroPrioridad" class="form-control">
+                        <option value="">Todas las prioridades</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <select id="filtroEstado" class="form-control">
+                        <option value="">Todos los estados</option>
+                        <option value="Abierto">Abierto</option>
+                        <option value="En proceso">En proceso</option>
+                        <option value="Cerrado">Cerrado</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -203,13 +198,23 @@
                         echo "<td>" . $row['id_incidente'] . "</td>";
                         echo "<td>" . $row['categoria'] . "</td>";
                         echo "<td>" . $row['prioridad'] . "</td>";
-                        echo "<td>" . $row['estado'] . "</td>";
+                        echo "<td>";
+                        if ($row['estado'] == 'Abierto') {
+                          echo "<i class='fas fa-circle text-success' title='Proceso Abierto'></i>";
+                        } elseif ($row['estado'] == 'En proceso') {
+                          echo "<i class='fas fa-circle text-warning' title='En Proceso'></i>";
+                        } elseif ($row['estado'] == 'Cerrado') {
+                          echo "<i class='fas fa-circle text-danger' title='Proceso Cerrado'></i>";
+                        } else {
+                          echo "<i class='fas fa-question-circle' title='Estado desconocido'></i>";
+                        }
+                        echo "</td>";
                         echo "<td>" . $row['descripcion'] . "</td>";
                         echo "<td>" . $row['c_usuario'] . "</td>";
                         echo "<td>";
                         echo "<div class='btn-group'>";
-                        echo "<button class='btn btn-primary btn-sm mr-2' data-toggle='modal' data-target='#editarModal-" . $row['id_incidente'] . "'>Editar</button>";
-                        echo "<a href='../CONTROLADOR/incidente.php?action=eliminar&id=" . $row['id_incidente'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"¿Estás seguro de que deseas eliminar esta incidencia?\")'>Eliminar</a>";
+                        echo "<button class='btn btn-primary btn-sm mr-2' data-toggle='modal' data-target='#editarModal-" . $row['id_incidente'] . "'><i class='fas fa-edit'></i></button>";
+                        echo "<a href='../CONTROLADOR/incidente.php?action=eliminar&id=" . $row['id_incidente'] . "' class='btn btn-danger btn-sm' onclick='return confirm(\"¿Estás seguro de que deseas eliminar esta incidencia?\")'><i class='fas fa-trash-alt'></i></a>";
                         echo "</div>";
                         echo "</td>";
                         echo "</tr>";
@@ -290,10 +295,48 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {         
+          const busquedaInput = document.getElementById("busqueda");
+          const filtroCategoria = document.getElementById("filtroCategoria");
+          const filtroPrioridad = document.getElementById("filtroPrioridad");
+          const filtroEstado = document.getElementById("filtroEstado");
+
+          busquedaInput.addEventListener("keyup", filtrarTabla);
+          filtroCategoria.addEventListener("change", filtrarTabla);
+          filtroPrioridad.addEventListener("change", filtrarTabla);
+          filtroEstado.addEventListener("change", filtrarTabla);
+
+          function filtrarTabla() {
+            const busqueda = busquedaInput.value.toLowerCase();
+            const categoria = filtroCategoria.value;
+            const prioridad = filtroPrioridad.value;
+            const estado = filtroEstado.value;
+
+            const filas = document.querySelectorAll("#dataTable tbody tr");
+
+            filas.forEach(function(fila) {
+              const descripcion = fila.cells[4].textContent.toLowerCase();
+              const categoriaValor = fila.cells[1].textContent;
+              const prioridadValor = fila.cells[2].textContent;
+              const estadoValor = fila.cells[3].textContent;
+
+              const mostrarFila =
+                descripcion.includes(busqueda) &&
+                (categoria === "" || categoriaValor === categoria) &&
+                (prioridad === "" || prioridadValor === prioridad) &&
+                (estado === "" || estadoValor === estado);
+
+              fila.style.display = mostrarFila ? "" : "none";
+            });
+          }
+        });
+      </script>
+
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">

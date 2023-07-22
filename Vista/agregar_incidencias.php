@@ -45,6 +45,11 @@
                     <i class="fas fa-fw fa-user-plus"></i>
                     <span>Usuario</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="asignar_incidencias.php">
+                <i class="fas fa-handshake"></i>
+                    <span>Asignar Incidente</span></a>
+            </li
             <hr class="sidebar-divider d-none d-md-block" />
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -121,7 +126,7 @@
                                 <div class="col-md-4">
                                     <div class="card-body">
                                         <label>Categoría:</label>
-                                        <select class="form-select form-control" name="categoria">
+                                        <select class="form-select form-control" name="categoria" required>
                                             <option value="">Seleccione una categoría</option>
                                             <option value="Hardware">Hardware</option>
                                             <option value="Software académico">Software académico</option>
@@ -135,7 +140,7 @@
                                 <div class="col-md-4">
                                     <div class="card-body">
                                         <label>Prioridad:</label>
-                                        <select class="form-select form-control" name="prioridad">
+                                        <select class="form-select form-control" name="prioridad" required>
                                             <option value="">Seleccione una prioridad</option>
                                             <option value="Alta">Alta</option>
                                             <option value="Media">Media</option>
@@ -146,7 +151,7 @@
                                 <div class="col-md-4">
                                     <div class="card-body">
                                         <label>Estado:</label>
-                                        <select class="form-select form-control" name="estado">
+                                        <select class="form-select form-control" name="estado" required>
                                             <option value="">Seleccione un estado</option>
                                             <option value="Abierto">Abierto</option>
                                             <option value="En proceso">En proceso</option>
@@ -205,6 +210,7 @@
                         </div>
                     </div>
                 </footer>
+                
             </div>
         </div>
         <a class="scroll-to-top rounded" href="#page-top">
